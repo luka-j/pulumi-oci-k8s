@@ -35,12 +35,12 @@ async function up(stackName: string) {
     let tunnel: child_process.ChildProcessWithoutNullStreams | undefined;
     try {
         await upGithubStack(stackName, ORG_CHART_FILE);
-        // const {okeClusterId, okeEndpoint, bastionSessionId} = await upOciStack(stackName);
-        //
-        // tunnel = startSshTunnel('6443', bastionSessionId, okeEndpoint);
-        //
-        // const {publicIp, argoIngressName, clusterIssuerName} = await upK8sStack(stackName, okeClusterId);
-        // await upCloudflareStack(stackName, publicIp, argoIngressName, clusterIssuerName);
+        const {okeClusterId, okeEndpoint, bastionSessionId} = await upOciStack(stackName);
+
+        tunnel = startSshTunnel('6443', bastionSessionId, okeEndpoint);
+
+        const {publicIp, argoIngressName, clusterIssuerName} = await upK8sStack(stackName, okeClusterId);
+        await upCloudflareStack(stackName, publicIp, argoIngressName, clusterIssuerName);
     } finally {
         stopSshTunnel(tunnel);
         console.log("Tunnel stopped");
