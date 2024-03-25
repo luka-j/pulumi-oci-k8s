@@ -1,0 +1,17 @@
+encryptionsalt: v1:9+zjLRkQ/MM=:v1:WL8nWT6OrMzvDPom:aQ0F/+FJIyNGs4AGvRHhSrom7vFejA==
+config:
+  cloudflare:apiToken:
+    secure: v1:R6XBNihY4tvt/NxF:CclPY8HoGTN5TebL0dw8+gCYCuRugQKmrNWkw/VSlAy9MpUKEH7qL563Jd4RoKEbOAdJ+ztp4v8=
+  master:bastion_host_image_id: ocid1.image.oc1.eu-frankfurt-1.aaaaaaaazmivdg6hi272oidkvp7rjmnpf5ay7m7tipx3nurps6znn4neoqoq
+  master:bastion_host_shape: VM.Standard.E2.1.Micro
+  master:kubernetes_version: v1.28.2
+  master:oke_node_image_id: ocid1.image.oc1.eu-frankfurt-1.aaaaaaaawo2geurhrh2tgdrxmauzfffny3t4cc66rpdtk6rjrugwro4igfbq
+  master:oke_node_memory_gbs: "6"
+  master:oke_node_pool_size: "2"
+  master:oke_node_shape: VM.Standard.A1.Flex
+  master:pods_ip_range: 10.244.0.0/13
+  master:private_subnet_range: 10.0.128.0/20
+  master:public_ssh_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDYDaIDeSGWMT9iV7zyIlqzlbqVUMbMbJfBjCLKdz4bRN5lKzTpbbJ7SAdJwXMcnC1TK78w/5lwK+MLn4fJ2oBepiTrU4XKq5VEaCU4uRgWMzQYdd2tkq9t5l/nnzRYW0bvVNCGP4sBnV76Bs3ZF7rW2cFVCYu6o7tbb1AR/QsR3PL5qg5EVp845q512n0Cf0B4KDNBdWUi0QSKmTRSLfL+syHdzRQcwEj5lDlUNAiTHlxmCV5nOcgr0ZuIaoVE/MeLT56BUtrR0cwf8voeBui8TBcYrroUUju4UKHSAuTfFjLUKQW09ARGA868QHhMMUEBNB2tROG+HrogafI42AKsof9rDTqYL6XLIB6VYUQavn+OL/pnGwCxxthILBeS1KWrurKwhZHpCQmoTfdNz2OzW8c5qkH9x6GY8YKqDO11YC1WZFBlnSufDLg/OcPXap1EYr2U6rc45azOv6RqbR4pASdOki1NVv94ddKgwYkP9lBVfNj0VYr/xQMSk11yUkE=
+  master:public_subnet_range: 10.0.0.0/20
+  master:services_ip_range: 10.96.0.0/16
+  master:vcn_range: 10.0.0.0/16

@@ -1,0 +1,14 @@
+encryptionsalt: v1:9+zjLRkQ/MM=:v1:WL8nWT6OrMzvDPom:aQ0F/+FJIyNGs4AGvRHhSrom7vFejA==
+config:
+  master:ingressCpuRequest: 120m
+  master:ingressMaxReplicas: "4"
+  master:ingressMemoryRequest: 150M
+  master:ingressVersion: 4.10.0
+  master:certManagerVersion: 1.14.4
+  master:acmeEmail: luka.jovicic16+acmemaster@gmail.com
+  master:argoVersion: 6.7.2
+  master:localClusterEndpoint: https://127.0.0.1:6443
+  master:okeClusterEndpoint: 10.0.131.181:6443
+  master:okeClusterId: ocid1.cluster.oc1.eu-frankfurt-1.aaaaaaaaabudt6o2odstxuo6lxdruznxgeadtvbbm7vabufotckjxqlbz4qa
+  master:ignoreKubeconfigCert: true
+  pulumi:disable-default-providers[0]: kubernetes

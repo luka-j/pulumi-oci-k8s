@@ -1,0 +1,5 @@
+encryptionsalt: v1:TXgWIRhmP7Q=:v1:u3SXEFVLoimw1pI4:ge2CGWmmDHG1KadgWTAv3ua86lSHVg==
+config:
+  master:githubToken:
+    secure: v1:SEpY+TFSxzVVPr90:FiJVSKAwBe8B5/48tEoxqTpGPD+c5qsY64qwmTMiRRtKWjdBZHUWHkseUyFeeHnemhRaNuwfmfM=
+  master:orgChartFile: D:\projects\master\project\org-chart.yaml

@@ -1,0 +1,3 @@
+name: master
+runtime: nodejs
+description: Stack which defines basic resources using Oracle Cloud Infrastructure
