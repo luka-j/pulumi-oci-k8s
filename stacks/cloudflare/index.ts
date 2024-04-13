@@ -1,6 +1,7 @@
 import * as cloudflare from "@pulumi/cloudflare";
 import {Config, all} from "@pulumi/pulumi";
-import {Ingress} from "@pulumi/kubernetes/networking/v1";
+import {Ingress, IngressPatch} from "@pulumi/kubernetes/networking/v1";
+import * as pulumi_kubernetes from "@pulumi/kubernetes";
 
 const config = new Config();
 
@@ -17,20 +18,27 @@ const dnsRecord = new cloudflare.Record("dns_record", {
     name: config.get("subdomain") ? `*.${config.get("subdomain")}` : "*",
     value: config.require("ip"),
     type: "A",
-    proxied: true,
+    proxied: false,
 });
 
 if(config.get("annotateIngressWithCertManager")) {
+    const kubernetesProvider = new pulumi_kubernetes.Provider("kubernetes_provider", {
+        kubeconfig: config.require("kubeconfig"),
+    });
+
     all([dnsRecord.urn]).apply(() => { // await cf dns record creation before triggering cert manager
         const ingressResourceName = config.require("annotateIngressWithCertManager");
-        const ingress = Ingress.get("existing_ingress", ingressResourceName);
-        ingress.metadata.apply(metadata => {
-            const annotations = {
-                ...metadata.annotations,
-                "cert-manager.io/cluster-issuer": config.require("certManagerIssuer")
-            }
-            return { ...metadata, annotations };
-        });
+        const ingressNameParts = ingressResourceName.split("/", 2);
+        const ingressPatch = new IngressPatch("argo_ingress_patch", {
+            metadata: {
+                namespace: ingressNameParts[0],
+                name: ingressNameParts[1],
+                annotations: {
+                    "cert-manager.io/cluster-issuer": config.require("certManagerIssuer"),
+                    "pulumi.com/patchForce": "true",
+                }
+            },
+        }, { provider: kubernetesProvider });
     });
 }
 
