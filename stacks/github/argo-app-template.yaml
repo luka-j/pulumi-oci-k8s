@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ${APP_NAME}-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: ${REPO_CLONE_URL}
+    targetRevision: refs/heads/master
+    path: k8s-resources
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ${APP_NAME}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true

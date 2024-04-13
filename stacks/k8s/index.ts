@@ -5,6 +5,7 @@ import * as oci from "@pulumi/oci";
 import * as YAML from 'yaml';
 import CertManager from "./components/certmanager";
 import ArgoCD from "./components/argocd";
+import * as pulumi from "@pulumi/pulumi";
 
 
 const config = new Config();
@@ -25,8 +26,6 @@ const localKubeConfig = kubeConfig.content
         console.log(parsed)
         return YAML.stringify(parsed);
     });
-
-localKubeConfig.apply(c => {console.error(c); return c;})
 
 const kubernetesProvider = new pulumi_kubernetes.Provider("kubernetes_provider", {
     kubeconfig: localKubeConfig
@@ -49,21 +48,28 @@ const certManager = new CertManager("cert_manager", {
     dependsOn: ingressController,
 });
 
-const argoCD = new ArgoCD("argo", {
-    version: config.require("argoVersion"),
-    host: config.require("argoHost"),
-    namespace: "argocd",
-    ingressName: "argo-server-ingress",
-    githubClientId: "370491d973ac94fecaf9",
-    githubClientSecret: "ebfb6c7db3812186a6bfe734f01bf81664354b76",
-    githubOrgName: "Runtime-T-error"  // todo get this from github stack
-}, {
-    provider: kubernetesProvider,
-    dependsOn: ingressController,
+var argoCD;
+pulumi.all([config.requireSecret("githubClientId"), config.requireSecret("githubClientSecret")])
+    .apply(([ghClientId, ghClientSecret]) => {
+         argoCD = new ArgoCD("argo", {
+            version: config.require("argoVersion"),
+            host: config.require("argoHost"),
+            namespace: "argocd",
+            ingressName: "argo-server-ingress",
+            githubClientId: ghClientId,
+            githubClientSecret: ghClientSecret,
+            githubOrgName: config.require("githubOrgName"),
+            appOfAppsRepo: config.require("appOfAppsRepo")
+        }, {
+            provider: kubernetesProvider,
+            dependsOn: ingressController,
+        });
 });
+
 
 export {
     ingressController,
     certManager,
-    argoCD
+    argoCD,
+    localKubeConfig
 }

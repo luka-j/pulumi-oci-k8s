@@ -1,14 +1,21 @@
 encryptionsalt: v1:9+zjLRkQ/MM=:v1:WL8nWT6OrMzvDPom:aQ0F/+FJIyNGs4AGvRHhSrom7vFejA==
 config:
+  master:acmeEmail: luka.jovicic16+acmemaster@gmail.com
+  master:appOfAppsRepo: https://github.com/lukaj-master/argo-app-of-apps.git
+  master:argoHost: argo.master.luka-j.rocks
+  master:argoVersion: 6.7.11
+  master:certManagerVersion: 1.14.4
+  master:githubClientId:
+    secure: v1:2XDl8KtDjjj5ay67:fI6CGPFz8CgUAirhkdRrl5qq/hMCFk8FzDz4x+VwXsYXvM/n
+  master:githubClientSecret:
+    secure: v1:DVHWAtgh7GlaGBay:NU18LYqp6sWuWa/Zkf7UH71HOzmBscdaFuXIwW50xVLrIUT91qj9udJ5PfBFD2kMTz2xWHgDXOY=
+  master:githubOrgName: lukaj-master
+  master:ignoreKubeconfigCert: "true"
   master:ingressCpuRequest: 120m
   master:ingressMaxReplicas: "4"
   master:ingressMemoryRequest: 150M
   master:ingressVersion: 4.10.0
-  master:certManagerVersion: 1.14.4
-  master:acmeEmail: luka.jovicic16+acmemaster@gmail.com
-  master:argoVersion: 6.7.2
   master:localClusterEndpoint: https://127.0.0.1:6443
   master:okeClusterEndpoint: 10.0.131.181:6443
-  master:okeClusterId: ocid1.cluster.oc1.eu-frankfurt-1.aaaaaaaaabudt6o2odstxuo6lxdruznxgeadtvbbm7vabufotckjxqlbz4qa
-  master:ignoreKubeconfigCert: true
+  master:okeClusterId: ocid1.cluster.oc1.eu-frankfurt-1.aaaaaaaawrzr2exptcfpg7q2deuw5aounq3gcuogwa2pt2px6cred4yd2uwa
   pulumi:disable-default-providers[0]: kubernetes

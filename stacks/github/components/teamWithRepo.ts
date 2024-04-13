@@ -2,11 +2,11 @@ import {ComponentResource, ComponentResourceOptions} from "@pulumi/pulumi";
 import {Repository, Team, TeamMembers, TeamRepository} from "@pulumi/github";
 
 class TeamWithRepo extends ComponentResource {
-    private repo : Repository;
-    private team : Team;
-    private teamMembers : TeamMembers;
-    private teamRepo : TeamRepository;
-
+    public repo : Repository;
+    public team : Team;
+    public teamMembers : TeamMembers;
+    public teamRepo : TeamRepository;
+    public repoName : string;
 
     constructor(name: string, args: { orgName: string, templateRepo: string, repoName: string, repoDescription: string,
                     teamName: string, teamMembers: string[]},
@@ -24,8 +24,9 @@ class TeamWithRepo extends ComponentResource {
                 repository: args.templateRepo,
             }
         }, { parent: this });
+        this.repoName = args.repoName;
 
-        this.team = new Team(`${name}_ team`, {
+        this.team = new Team(`${name}_team`, {
             name: args.teamName,
             privacy: "closed",
         }, { parent: this });
