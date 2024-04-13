@@ -3,6 +3,7 @@ import Vcn from "./components/vcn";
 import {Config} from "@pulumi/pulumi";
 import * as oci from "@pulumi/oci";
 import * as pulumi from "@pulumi/pulumi";
+import Budget from "./components/budget";
 
 const config = new Config();
 
@@ -12,18 +13,37 @@ const compartment = new oci.identity.Compartment("master", {
     enableDelete: true
 });
 
-const ads = pulumi.all([compartment.id]).apply(([id]) => {
-    return oci.identity.getAvailabilityDomains({
-        compartmentId: id,
-    });
-})
+const budget = new Budget("one", {
+    tenancyId: config.requireSecret("tenancyId"),
+    compartmentId: compartment.id,
+    amount: 1,
+    description: "Ensure (almost) nothing is spent",
+    displayName: "master-low-budget",
+    rules: [{
+        threshold: 0.01,
+        thresholdType: "ABSOLUTE",
+        type: "ACTUAL",
+        message: "Spending occurred!"
+    }, {
+        threshold: 95,
+        thresholdType: "PERCENTAGE",
+        type: "FORECAST",
+        message: "On track to spend whole budget"
+    }],
+});
 
 const vcn = new Vcn("network", {
     compartmentId: compartment.id,
     vcnName: "vcn",
-    vcnRange: config.require("vcn_range"),
-    publicSubnetRange: config.require("public_subnet_range"),
-    privateSubnetRange: config.require("private_subnet_range")
+    vcnRange: config.require("vcnRange"),
+    publicSubnetRange: config.require("publicSubnetRange"),
+    privateSubnetRange: config.require("privateSubnetRange")
+});
+
+const ads = pulumi.all([compartment.id]).apply(([id]) => {
+    return oci.identity.getAvailabilityDomains({
+        compartmentId: id,
+    });
 });
 
 const cluster = new KubernetesCluster("compute", {
@@ -34,16 +54,16 @@ const cluster = new KubernetesCluster("compute", {
     availabilityDomainNames: ads.availabilityDomains
         .apply((ads) =>
             ads.map((ad) => ad.name)),
-    kubernetesVersion: config.require("kubernetes_version"),
-    podsIpRange: config.require("pods_ip_range"),
-    servicesIpRange: config.require("services_ip_range"),
-    nodePoolSize: config.requireNumber("oke_node_pool_size"),
-    nodeShape: config.require("oke_node_shape"),
-    nodeMemoryGbs: config.requireNumber("oke_node_memory_gbs"),
-    nodeImageId: config.require("oke_node_image_id"),
-    bastionHostShape: config.require("bastion_host_shape"),
-    bastionHostImage: config.require("bastion_host_image_id"),
-    bastionAuthorizedSshKey: config.require("public_ssh_key")
+    kubernetesVersion: config.require("kubernetesVersion"),
+    podsIpRange: config.require("podsIpRange"),
+    servicesIpRange: config.require("servicesIpRange"),
+    nodePoolSize: config.requireNumber("okeNodePoolSize"),
+    nodeShape: config.require("okeNodeShape"),
+    nodeMemoryGbs: config.requireNumber("okeNodeMemoryGbs"),
+    nodeImageId: config.require("okeNodeImageId"),
+    bastionHostShape: config.require("bastionHostShape"),
+    bastionHostImage: config.require("bastionHostImageId"),
+    bastionAuthorizedSshKey: config.require("publicSshKey")
 });
 
 const clusterPrivateEndpointParts = cluster.okeCluster.endpoints[0].privateEndpoint.apply((t) => t.split(":"));
@@ -51,7 +71,7 @@ const clusterPrivateEndpointParts = cluster.okeCluster.endpoints[0].privateEndpo
 const bastionSession = new oci.bastion.Session("bastion_session", {
     bastionId: cluster.bastion.id,
     keyDetails: {
-        publicKeyContent: config.require("public_ssh_key")
+        publicKeyContent: config.require("publicSshKey")
     },
     targetResourceDetails: {
         sessionType: "PORT_FORWARDING",
@@ -63,10 +83,9 @@ const bastionSession = new oci.bastion.Session("bastion_session", {
     deletedWith: cluster.bastion
 });
 
-// todo limits and alerts
-
 export {
     compartment,
+    budget,
     vcn,
     cluster,
     bastionSession
