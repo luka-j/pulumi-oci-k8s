@@ -39,6 +39,10 @@ class Budget extends ComponentResource {
                 displayName: rule.displayName,
                 message: rule.message,
             }, { parent: this }));
+
+        this.registerOutputs({
+            budgetId: this.budget.id,
+        });
     }
 }
 
