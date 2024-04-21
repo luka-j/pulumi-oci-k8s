@@ -16,8 +16,6 @@ class Vcn extends ComponentResource {
     private publicRouteTable: oci.core.RouteTable;
     private privateSecurityList: oci.core.SecurityList;
     private natGateway: oci.core.NatGateway;
-    private drg: oci.core.Drg;
-    private drgAttachmentVcn: oci.core.DrgAttachment;
     private privateRouteTable: oci.core.RouteTable;
 
 
@@ -153,16 +151,6 @@ class Vcn extends ComponentResource {
             vcnId: this.vcn.id,
             displayName: `${args.vcnName}-ng`,
         }, { parent: this});
-        this.drg = new oci.core.Drg(`${name}_drg`, {
-            compartmentId: args.compartmentId,
-        }, { parent: this});
-        this.drgAttachmentVcn = new oci.core.DrgAttachment(`${name}_drg_attachment_vcn`, {
-            drgId: this.drg.id,
-            networkDetails: {
-                id: this.vcn.id,
-                type: "VCN",
-            },
-        }, { parent: this});
         this.privateRouteTable = new oci.core.RouteTable(`${name}_private_route_table`, {
             compartmentId: args.compartmentId,
             vcnId: this.vcn.id,
@@ -171,10 +159,6 @@ class Vcn extends ComponentResource {
                 destination: ALL_IPS,
                 destinationType: "CIDR_BLOCK",
                 networkEntityId: this.natGateway.id,
-            }, {
-                destination: args.vcnRange,
-                destinationType: "CIDR_BLOCK",
-                networkEntityId: this.drg.id,
             }],
         }, { parent: this});
         this.privateSubnet = new oci.core.Subnet("private_subnet", {
