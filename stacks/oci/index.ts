@@ -1,9 +1,8 @@
-import KubernetesCluster from "./components/cluster";
 import Vcn from "./components/vcn";
+import KubernetesCluster from "./components/cluster";
+import Budget from "./components/budget";
 import {Config} from "@pulumi/pulumi";
 import * as oci from "@pulumi/oci";
-import * as pulumi from "@pulumi/pulumi";
-import Budget from "./components/budget";
 
 const config = new Config();
 
@@ -40,11 +39,11 @@ const vcn = new Vcn("network", {
     privateSubnetRange: config.require("privateSubnetRange")
 });
 
-const ads = pulumi.all([compartment.id]).apply(([id]) => {
-    return oci.identity.getAvailabilityDomains({
-        compartmentId: id,
-    });
-});
+const ads = compartment.id.apply(id =>
+    oci.identity.getAvailabilityDomains({
+        compartmentId: id
+    })
+);
 
 const cluster = new KubernetesCluster("compute", {
     compartmentId: compartment.id,
