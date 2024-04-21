@@ -12,6 +12,12 @@ const compartment = new oci.identity.Compartment("master", {
     enableDelete: true
 });
 
+const ads = compartment.id.apply(id =>
+    oci.identity.getAvailabilityDomains({
+        compartmentId: id
+    })
+);
+
 const budget = new Budget("one", {
     tenancyId: config.requireSecret("tenancyId"),
     compartmentId: compartment.id,
@@ -38,12 +44,6 @@ const vcn = new Vcn("network", {
     publicSubnetRange: config.require("publicSubnetRange"),
     privateSubnetRange: config.require("privateSubnetRange")
 });
-
-const ads = compartment.id.apply(id =>
-    oci.identity.getAvailabilityDomains({
-        compartmentId: id
-    })
-);
 
 const cluster = new KubernetesCluster("compute", {
     compartmentId: compartment.id,
