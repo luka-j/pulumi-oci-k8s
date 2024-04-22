@@ -1,6 +1,6 @@
 import * as cloudflare from "@pulumi/cloudflare";
 import {Config, all} from "@pulumi/pulumi";
-import {Ingress, IngressPatch} from "@pulumi/kubernetes/networking/v1";
+import {IngressPatch} from "@pulumi/kubernetes/networking/v1";
 import * as pulumi_kubernetes from "@pulumi/kubernetes";
 
 const config = new Config();
