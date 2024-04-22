@@ -109,7 +109,7 @@ class ArgoCD extends ComponentResource {
             this.rbacCmPatch = new ConfigMapPatch("rbac_cm_patch", {
                 metadata: {
                     name: "argocd-rbac-cm",
-                    namespace: "argocd",
+                    namespace: ns,
                     annotations: {
                         "pulumi.com/patchForce": "true",
                     },
