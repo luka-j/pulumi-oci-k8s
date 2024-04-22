@@ -83,7 +83,7 @@ class ArgoCD extends ComponentResource {
             }
         }, { parent: this, dependsOn: this.argoCD });
 
-        all([this.argoCD.id]).apply(() => {
+        this.argoCD.id.apply(() => {
             this.argoCmPatch = new ConfigMapPatch("argo_cm_patch", {
                 metadata: {
                     name: "argocd-cm",
