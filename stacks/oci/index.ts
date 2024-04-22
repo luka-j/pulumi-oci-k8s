@@ -18,7 +18,7 @@ const ads = compartment.id.apply(id =>
     })
 );
 
-const budget = new Budget("one", {
+const budget = new Budget("budget_one", {
     tenancyId: config.requireSecret("tenancyId"),
     compartmentId: compartment.id,
     amount: 1,
