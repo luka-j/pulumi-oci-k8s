@@ -16,6 +16,28 @@ const GITHUB_STACK_DIR = "./stacks/github";
 
 const ORG_CHART_FILE = process.cwd() + '/org-chart.yaml';
 
+
+if (command === undefined || stackName === undefined) {
+    console.log(`command and stack name must be passed as arguments`);
+    process.exit(1);
+}
+
+process.env.PULUMI_CONFIG_PASSPHRASE_FILE=process.cwd() + '/pulumi_passphrase'
+
+if (command === "up") {
+    console.log(`Running [${command}] on stack [${stackName}]`);
+    up(stackName);
+} else if (command === "down" || command === "destroy") {
+    down(false);
+} else if (command === "destroyAll") {
+    down(true);
+} else if (command === "preview") {
+    console.error("Previewing stacks is not supported. Use Pulumi CLI and preview stacks one by one manually.")
+} else {
+    console.log(`Unsupported command [${command}]. Exiting...`);
+    process.exit(1);
+}
+
 async function up(stackName: string) {
     let tunnel: child_process.ChildProcessWithoutNullStreams | undefined;
     try {
@@ -32,15 +54,25 @@ async function up(stackName: string) {
     }
 }
 
-async function upGithubStack(stackName: string, orgChartFile: string) {
-    const githubStack = await LocalWorkspace.createOrSelectStack({
-        workDir: GITHUB_STACK_DIR,
-        stackName: `gh_${stackName}`
-    });
-    await githubStack.setConfig("orgChartFile", {value: orgChartFile});
-    await githubStack.setConfig("host", {value: PROJECT_HOST});
+const githubStack = async () => await LocalWorkspace.createOrSelectStack({
+    workDir: GITHUB_STACK_DIR,
+    stackName: `gh_${stackName}`
+});
+const ociStack = async () => await LocalWorkspace.createOrSelectStack({
+    workDir: OCI_STACK_DIR,
+    stackName: `oci_${stackName}`
+});
+const cloudflareStack = async () => await LocalWorkspace.createOrSelectStack({
+    workDir: CLOUDFLARE_STACK_DIR,
+    stackName: `cf_${stackName}`
+});
 
-    const githubResult = await githubStack.up({onOutput: plainLog});
+async function upGithubStack(stackName: string, orgChartFile: string) {
+    const stack = await githubStack()
+    await stack.setConfig("orgChartFile", {value: orgChartFile});
+    await stack.setConfig("host", {value: PROJECT_HOST});
+
+    const githubResult = await stack.up({onOutput: plainLog});
     const githubOutputs = githubResult.outputs;
     const orgName = githubOutputs.org.value.name;
     const appOfAppsUrl = githubOutputs.argoAppOfAppsRepo.value.httpCloneUrl;
@@ -48,11 +80,8 @@ async function upGithubStack(stackName: string, orgChartFile: string) {
 }
 
 async function upOciStack(stackName: string) {
-    const ociStack = await LocalWorkspace.createOrSelectStack({
-        workDir: OCI_STACK_DIR,
-        stackName: `oci_${stackName}`
-    });
-    const ociResult = await ociStack.up({onOutput: plainLog});
+    const stack = await ociStack();
+    const ociResult = await stack.up({onOutput: plainLog});
     const ociOutputs = ociResult.outputs;
 
     const okeClusterId = ociOutputs.cluster.value.okeCluster.id;
@@ -88,35 +117,24 @@ async function upK8sStack(stackName: string, okeClusterId: string, githubOrgName
 
 async function upCloudflareStack(stackName: string, publicIp: string, kubeconfig: string,
                                  argoIngressName: string, certManagerIssuer: string) {
-    const cloudflareStack = await LocalWorkspace.createOrSelectStack({
-        workDir: CLOUDFLARE_STACK_DIR,
-        stackName: `cf_${stackName}`
-    });
-    await cloudflareStack.setConfig("ip", {value: publicIp});
-    await cloudflareStack.setConfig("domain", {value: PROJECT_DOMAIN});
-    await cloudflareStack.setConfig("subdomain", {value: PROJECT_SUBDOMAIN});
-    await cloudflareStack.setConfig("kubeconfig", {value: kubeconfig});
-    await cloudflareStack.setConfig("annotateIngressWithCertManager", {value: argoIngressName});
-    await cloudflareStack.setConfig("certManagerIssuer", {value: certManagerIssuer})
-    const cloudflareResult = await cloudflareStack.up({onOutput: plainLog});
+    const stack = await cloudflareStack();
+    await stack.setConfig("ip", {value: publicIp});
+    await stack.setConfig("domain", {value: PROJECT_DOMAIN});
+    await stack.setConfig("subdomain", {value: PROJECT_SUBDOMAIN});
+    await stack.setConfig("kubeconfig", {value: kubeconfig});
+    await stack.setConfig("annotateIngressWithCertManager", {value: argoIngressName});
+    await stack.setConfig("certManagerIssuer", {value: certManagerIssuer})
+    const cloudflareResult = await stack.up({onOutput: plainLog});
 }
 
-
-if (command === undefined || stackName === undefined) {
-    console.log(`command and stack name must be passed as arguments`);
-    process.exit(1);
-}
-
-process.env.PULUMI_CONFIG_PASSPHRASE_FILE=process.cwd() + '/pulumi_passphrase'
-
-if (command === "preview") {
-    console.error("Previewing stacks is not supported. Use Pulumi CLI and preview stacks one by one manually.")
-} else if (command === "up") {
-    console.log(`Running [${command}] on stack [${stackName}]`);
-    up(stackName);
-} else if (command === "down" || command === "destroy") {
-    console.error("Destroying stacks is not supported. Use Pulumi CLI and destroy stacks one by one manually.")
-} else {
-    console.log(`Unsupported command [${command}]. Exiting...`);
-    process.exit(1);
+async function down(deleteGithub : boolean) {
+    console.log("Destroying OCI infrastructure. This will take a while...");
+    await (await ociStack()).destroy();
+    if(deleteGithub) {
+        console.log("Done. Deleting GitHub repos...");
+        await (await githubStack()).destroy();
+    }
+    console.log("Done. Deleting DNS records and rules from CloudFlare...");
+    await (await cloudflareStack()).destroy();
+    console.log("Done.")
 }
