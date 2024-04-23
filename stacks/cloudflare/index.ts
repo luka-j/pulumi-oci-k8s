@@ -34,6 +34,7 @@ const ruleSslOff = new cloudflare.PageRule("page_rule_ssl_off", {
 if(config.get("annotateIngressWithCertManager")) {
     const kubernetesProvider = new pulumi_kubernetes.Provider("kubernetes_provider", {
         kubeconfig: config.require("kubeconfig"),
+        deleteUnreachable: true,
     });
 
     const ingressResourceName = config.require("annotateIngressWithCertManager");
