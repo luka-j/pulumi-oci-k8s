@@ -20,6 +20,6 @@ in `stacks/github/Pulumi.gh_dev.yaml`. Passphrase used for Pulumi password encry
 `pulumi_passphrase` file in root directory of this project. `org-chart.yaml` should be edited to reflect actual org 
 name, projects and GitHub usernames of developers to be added to the org.
 
-After reviewing stacks' configuration, run `pulumi.ts up` with your favourite command for TypeScript Node projects.
-If you want to destroy all infrastructure, including GitHub repos and org memberships, run `pulumi.ts destroyAll`; 
-if you want to keep GitHub repos and org memberships (but destroy everything else), run `pulumi.ts destroy`.
+After reviewing stacks' configuration, run `pulumi.ts up dev` with your favourite command for TypeScript Node projects.
+If you want to destroy all infrastructure, including GitHub repos and org memberships, run `pulumi.ts destroyAll dev`; 
+if you want to keep GitHub repos and org memberships (but destroy everything else), run `pulumi.ts destroy dev`.
