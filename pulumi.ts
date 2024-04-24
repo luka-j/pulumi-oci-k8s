@@ -6,9 +6,6 @@ const PROJECT_DOMAIN = "luka-j.rocks";
 const PROJECT_SUBDOMAIN = "master";
 const PROJECT_HOST = `${PROJECT_SUBDOMAIN}.${PROJECT_DOMAIN}`;
 
-const command = process.argv[2];
-const stackName = process.argv[3];
-
 const OCI_STACK_DIR = "./stacks/oci";
 const K8S_STACK_DIR = "./stacks/k8s";
 const CLOUDFLARE_STACK_DIR = "./stacks/cloudflare";
@@ -16,6 +13,8 @@ const GITHUB_STACK_DIR = "./stacks/github";
 
 const ORG_CHART_FILE = process.cwd() + '/org-chart.yaml';
 
+const command = process.argv[2];
+const stackName = process.argv[3];
 
 if (command === undefined || stackName === undefined) {
     console.log(`command and stack name must be passed as arguments`);
