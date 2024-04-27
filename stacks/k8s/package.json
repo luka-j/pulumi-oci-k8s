@@ -7,6 +7,7 @@
     "dependencies": {
         "@pulumi/oci": "1.24.0",
         "@pulumi/pulumi": "3.108.1",
-        "@pulumi/kubernetes": "4.8.1"
+        "@pulumi/kubernetes": "4.8.1",
+        "@pulumi/command": "0.10.0"
     }
 }

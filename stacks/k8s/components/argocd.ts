@@ -1,19 +1,21 @@
-import {all, ComponentResource, ComponentResourceOptions, Output, output} from "@pulumi/pulumi";
+import {ComponentResource, ComponentResourceOptions, Output, output} from "@pulumi/pulumi";
 import {Release} from "@pulumi/kubernetes/helm/v3/release";
 import {Ingress} from "@pulumi/kubernetes/networking/v1";
 import {ConfigMapPatch} from "@pulumi/kubernetes/core/v1";
 import {CustomResource} from "@pulumi/kubernetes/apiextensions";
+import {local} from "@pulumi/command";
 
 class ArgoCD extends ComponentResource {
     public argoCD: Release;
     public argoIngress: Ingress;
-    public argoCmPatch: ConfigMapPatch | undefined;
-    public rbacCmPatch: ConfigMapPatch | undefined;
+    public argoCmPatch: ConfigMapPatch;
+    public rbacCmPatch: ConfigMapPatch;
+    public restartArgoCommand: local.Command;
     public appOfApps: CustomResource;
 
     constructor(name: string, args: { version: string, host: string, githubClientId: string,
                     githubClientSecret: string, githubOrgName: string, namespace: string, ingressName: string,
-                    appOfAppsRepo: string},
+                    kubeconfigFile: string, appOfAppsRepo: string},
                 opts?: ComponentResourceOptions) {
         super("master:k8s:ArgoCD", name, args, opts);
 
@@ -83,18 +85,17 @@ class ArgoCD extends ComponentResource {
             }
         }, { parent: this, dependsOn: this.argoCD });
 
-        this.argoCD.id.apply(() => {
-            this.argoCmPatch = new ConfigMapPatch("argo_cm_patch", {
-                metadata: {
-                    name: "argocd-cm",
-                    namespace: ns,
-                    annotations: {
-                        "pulumi.com/patchForce": "true",
-                    }
-                },
-                data: {
-                    "dex.config":
-                        `connectors:
+        this.argoCmPatch = new ConfigMapPatch("argo_cm_patch", {
+            metadata: {
+                name: "argocd-cm",
+                namespace: ns,
+                annotations: {
+                    "pulumi.com/patchForce": "true",
+                }
+            },
+            data: {
+                "dex.config":
+                    `connectors:
  - type: github
    id: github
    name: GitHub
@@ -103,25 +104,28 @@ class ArgoCD extends ComponentResource {
      clientSecret: ${args.githubClientSecret}
      orgs:
      - name: ${args.githubOrgName}`
-                },
-            }, { parent: this });
+            },
+        }, { parent: this, dependsOn: this.argoCD });
 
-            this.rbacCmPatch = new ConfigMapPatch("rbac_cm_patch", {
-                metadata: {
-                    name: "argocd-rbac-cm",
-                    namespace: ns,
-                    annotations: {
-                        "pulumi.com/patchForce": "true",
-                    },
+        this.rbacCmPatch = new ConfigMapPatch("rbac_cm_patch", {
+            metadata: {
+                name: "argocd-rbac-cm",
+                namespace: ns,
+                annotations: {
+                    "pulumi.com/patchForce": "true",
                 },
-                data: {
-                    "policy.csv":
-`p, role:sync, applications, sync, */*, allow
+            },
+            data: {
+                "policy.csv":
+                    `p, role:sync, applications, sync, */*, allow
 g, role:sync, role:readonly`,
-                    "policy.default": "role:sync",
-                },
-            }, { parent: this });
-        });
+                "policy.default": "role:sync",
+            },
+        }, { parent: this, dependsOn: this.argoCD });
+
+        this.restartArgoCommand = new local.Command(`${name}_argo_restart`, {
+            create: `kubectl --kubeconfig ${args.kubeconfigFile} delete pods --all -n ${ns}`
+        }, { dependsOn: [this.argoCmPatch, this.rbacCmPatch] });
 
         this.appOfApps = new CustomResource(`${name}_app_of_apps`, {
             apiVersion: "argoproj.io/v1alpha1",
