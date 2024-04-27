@@ -53,18 +53,24 @@ async function up(stackName: string) {
     }
 }
 
-const githubStack = async () => await LocalWorkspace.createOrSelectStack({
-    workDir: GITHUB_STACK_DIR,
-    stackName: `gh_${stackName}`
-});
-const ociStack = async () => await LocalWorkspace.createOrSelectStack({
-    workDir: OCI_STACK_DIR,
-    stackName: `oci_${stackName}`
-});
-const cloudflareStack = async () => await LocalWorkspace.createOrSelectStack({
-    workDir: CLOUDFLARE_STACK_DIR,
-    stackName: `cf_${stackName}`
-});
+async function githubStack() {
+    return await LocalWorkspace.createOrSelectStack({
+        workDir: GITHUB_STACK_DIR,
+        stackName: `gh_${stackName}`
+    });
+}
+async function ociStack() {
+    return await LocalWorkspace.createOrSelectStack({
+        workDir: OCI_STACK_DIR,
+        stackName: `oci_${stackName}`
+    });
+}
+async function cloudflareStack() {
+    return await LocalWorkspace.createOrSelectStack({
+        workDir: CLOUDFLARE_STACK_DIR,
+        stackName: `cf_${stackName}`
+    });
+}
 
 async function upGithubStack(stackName: string, orgChartFile: string) {
     const stack = await githubStack()
