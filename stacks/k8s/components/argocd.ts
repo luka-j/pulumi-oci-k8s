@@ -125,7 +125,7 @@ g, role:sync, role:readonly`,
 
         this.restartArgoCommand = new local.Command(`${name}_argo_restart`, {
             create: `kubectl --kubeconfig ${args.kubeconfigFile} delete pods --all -n ${ns}`
-        }, { dependsOn: [this.argoCmPatch, this.rbacCmPatch] });
+        }, { parent: this, dependsOn: [this.argoCmPatch, this.rbacCmPatch] });
 
         this.appOfApps = new CustomResource(`${name}_app_of_apps`, {
             apiVersion: "argoproj.io/v1alpha1",
