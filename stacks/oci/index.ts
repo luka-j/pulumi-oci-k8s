@@ -7,8 +7,8 @@ import * as oci from "@pulumi/oci";
 const config = new Config();
 
 const compartment = new oci.identity.Compartment("master", {
-    name: "master",
-    description: "master-test-compartment",
+    name: config.require("compartmentName"),
+    description: config.require("compartmentDescription"),
     enableDelete: true
 });
 
