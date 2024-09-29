@@ -2,17 +2,17 @@ org:
   name: lukaj-master
   templateRepo: aspnet-template-app
   teams:
-    - name: T1
-      repo: test1
-      repoDescription: Testing repo 1
+    - name: D01
+      repo: demo1
+      repoDescription: Demo repo 1
       members:
         - rs2-apigtw
-    - name: T2
-      repo: test2
-      repoDescription: Testing repo 2
+    - name: D02
+      repo: demo2
+      repoDescription: Demo repo 2
       members: []
-    - name: T3
-      repo: test3
-      repoDescription: Testing repo 3
+    - name: D03
+      repo: demo3
+      repoDescription: Demo repo 3
       members:
         - rs2-apigtw

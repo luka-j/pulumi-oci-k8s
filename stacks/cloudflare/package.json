@@ -5,9 +5,9 @@
         "@types/node": "^18"
     },
     "dependencies": {
-        "@pulumi/oci": "1.24.0",
-        "@pulumi/pulumi": "3.108.1",
-        "@pulumi/kubernetes": "4.8.1",
-        "@pulumi/cloudflare": "5.22.0"
+        "@pulumi/cloudflare": "5.37.1",
+        "@pulumi/kubernetes": "4.17.1",
+        "@pulumi/oci": "2.9.0",
+        "@pulumi/pulumi": "3.131.0"
     }
 }

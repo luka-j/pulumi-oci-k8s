@@ -5,5 +5,35 @@ config:
   master:annotateIngressWithCertManager: argocd/argo-server-ingress
   master:certManagerIssuer: letsencrypt-prod
   master:domain: luka-j.rocks
-  master:ip: 138.2.132.240
+  master:ip: 130.61.88.126
   master:subdomain: master
+  master:kubeconfig: |
+    ---
+    apiVersion: v1
+    kind: ""
+    clusters:
+      - name: cluster-caw5tuz36ua
+        cluster:
+          server: https://localhost:6443
+          certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURpRENDQW5DZ0F3SUJBZ0lRVDVUMGd0NENpMUxGNEZFTEx4eGVVekFOQmdrcWhraUc5dzBCQVFzRkFEQmUKTVE4d0RRWURWUVFEREFaTE9ITWdRMEV4Q3pBSkJnTlZCQVlUQWxWVE1ROHdEUVlEVlFRSERBWkJkWE4wYVc0eApEekFOQmdOVkJBb01Cazl5WVdOc1pURU1NQW9HQTFVRUN3d0RUMk5wTVE0d0RBWURWUVFJREFWVVpYaGhjekFlCkZ3MHlOREE1TWpJeU1UUXhNRFZhRncweU9UQTVNakl5TVRReE1EVmFNRjR4RHpBTkJnTlZCQU1NQmtzNGN5QkQKUVRFTE1Ba0dBMVVFQmhNQ1ZWTXhEekFOQmdOVkJBY01Ca0YxYzNScGJqRVBNQTBHQTFVRUNnd0dUM0poWTJ4bApNUXd3Q2dZRFZRUUxEQU5QWTJreERqQU1CZ05WQkFnTUJWUmxlR0Z6TUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGCkFBT0NBUThBTUlJQkNnS0NBUUVBc3dXNC9DZ2l1dFpVV1kxdXI2ZEcwV29LZDZNaXBXb2hGMmhwTEpVUGl3aGoKUkIveVhuaWtXRzgwY0gyN0dnM1hTcVQyTjlVSHd4R2dtSDB0K3dPWkU0TE45SU9GbnRzTnVOSzl4RHNoQjE4aApBVFRISUVzdzlwakswU3U0L0cvOG4yVStRMWEySlhpTGQ2V0hzR1V2MElwb3pweVFaYk1VL0xIcFY5OXlUdVRGClFxdXcyWEpGQmtiWlRnWnNEVkpibDQ5bGttOXVBM3dycVVKMFU2MFludndEN1hpWFlSVXdHL05ocHB6SEFXSXYKeTBqSjdaVjNleTE1alVLQWNiQXcxY3lpMFpzajRhTk9QT09NZzFyTUNTYUdEWFQrREVWZ3d4emNJSDlEQ0k4RQpqM2F1VW5HVGp4TUFvYUR4cTYwVm5zdGZ5aytGWjdNNzBFSFRuS2VpelFJREFRQUJvMEl3UURBUEJnTlZIUk1CCkFmOEVCVEFEQVFIL01BNEdBMVVkRHdFQi93UUVBd0lCQmpBZEJnTlZIUTRFRmdRVUYzL041WlNRZHlHL1loZ3kKOWxudzk0dXFEcGt3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUUvSm9TODdBTi9ycExPQ0kyWnVxWEw4SEFnawpNU1pjNWtUdWMyaTJuV3Rqb0EzMmJCb0xuWjlMT0JZQjduQTJTa1QrRDRLamFFdlFkOUg2NmlZcWhkL08vR0RwCmdoMkZ1UlJadzhndDdzOWEwTjNUMFVZSHhhNEZZNWFRMXIxZ0lRby9iV2JicUNHc3ZIMXhjYmtycUpXYUU2RmwKU1ZPMFFxL28rRFFxQ0ozQWtjMjZxemlmc1diNjNaQ0JBWTRRREF0emlncFlKMktxZGRnQ0tKdW5nSnh3OWVrZQo1YkhZeFBZMlpUQ2U4TW9ZbmJWY1dqelZZY3NFcm9lSnJvWU04c3BiYTF4WkFWMk9PRDJyYW5PNSs0b3doR2hFClNydGN4ZExnZEJmM2VIUzl2NURvRHFiMC9RZUVySzZLVjZZeENNdHNCUWxQOFJ0RmZMVUlsdTluKzEwPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    users:
+      - name: user-caw5tuz36ua
+        user:
+          exec:
+            apiVersion: client.authentication.k8s.io/v1beta1
+            command: oci
+            args:
+              - ce
+              - cluster
+              - generate-token
+              - --cluster-id
+              - ocid1.cluster.oc1.eu-frankfurt-1.aaaaaaaardyrrhzroonvktkmwvianlcojizzmagzwbisi52drcaw5tuz36ua
+              - --region
+              - eu-frankfurt-1
+            env: []
+    contexts:
+      - name: context-caw5tuz36ua
+        context:
+          cluster: cluster-caw5tuz36ua
+          user: user-caw5tuz36ua
+    current-context: context-caw5tuz36ua

@@ -29,7 +29,8 @@ const localKubeConfig = kubeConfig.content
     });
 
 const kubernetesProvider = new pulumi_kubernetes.Provider("kubernetes_provider", {
-    kubeconfig: localKubeConfig
+    kubeconfig: localKubeConfig,
+    skipUpdateUnreachable: true
 });
 
 const ingressController = new IngressController("ingress", {
